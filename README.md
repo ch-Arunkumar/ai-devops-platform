@@ -24,3 +24,17 @@ curl http://localhost/api/orders
 ```
 docker compose down
 ```
+## Phase 6 - Monitoring
+
+Prometheus and Grafana installed via Helm.
+
+Start monitoring stack:
+```bash
+kubectl port-forward svc/prometheus-grafana 3000:80 -n monitoring
+```
+Open http://localhost:3000 — login with admin credentials.
+
+Available dashboards:
+- Kubernetes Cluster resources
+- Pod CPU and memory usage  
+- Alertmanager overview
