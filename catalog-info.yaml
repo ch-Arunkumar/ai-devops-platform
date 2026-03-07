@@ -1,0 +1,59 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: ai-devops-platform
+  description: AI Powered GitOps CI/CD Platform
+spec:
+  owner: team-backend
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: user-service
+  description: Handles user registration and management
+  annotations:
+    github.com/project-slug: ch-Arunkumar/ai-devops-platform
+spec:
+  type: service
+  lifecycle: production
+  owner: team-backend
+  system: ai-devops-platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: product-service
+  description: Handles product catalog and inventory
+  annotations:
+    github.com/project-slug: ch-Arunkumar/ai-devops-platform
+spec:
+  type: service
+  lifecycle: production
+  owner: team-backend
+  system: ai-devops-platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: order-service
+  description: Handles order creation and tracking
+  annotations:
+    github.com/project-slug: ch-Arunkumar/ai-devops-platform
+spec:
+  type: service
+  lifecycle: production
+  owner: team-backend
+  system: ai-devops-platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ai-healer
+  description: AI self healing service using GPT-4
+  annotations:
+    github.com/project-slug: ch-Arunkumar/ai-devops-platform
+spec:
+  type: service
+  lifecycle: production
+  owner: team-platform
+  system: ai-devops-platform

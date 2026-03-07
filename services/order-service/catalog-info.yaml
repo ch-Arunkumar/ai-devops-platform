@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: order-service
+  description: Handles order creation and tracking
+  tags:
+    - python
+    - flask
+    - kubernetes
+  annotations:
+    github.com/project-slug: ch-Arunkumar/ai-devops-platform
+spec:
+  type: service
+  lifecycle: production
+  owner: team-backend
