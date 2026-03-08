@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import logging, os, uuid
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+CORS(app)
 
 PRODUCTS_DB = {
     "p1": {"id": "p1", "name": "Laptop Pro 15",   "price": 1299.99, "stock": 50,  "category": "electronics"},

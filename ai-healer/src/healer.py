@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import requests
 import os
 import json
@@ -9,6 +10,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+CORS(app)
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 SLACK_WEBHOOK  = os.getenv("SLACK_WEBHOOK_URL")

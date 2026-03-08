@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FoodExpress — AI DevOps Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --orange: #ff6b35;
+    --orange2: #f7931e;
+    --bg: #080808;
+    --card: #111111;
+    --card2: #1a1a1a;
+    --border: #222;
+    --text: #f0f0f0;
+    --muted: #666;
+    --green: #00e676;
+    --red: #ff1744;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+    padding: 18px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; }
+  .logo span { opacity: 0.7; font-size: 13px; display: block; font-weight: 400; }
+
+  .badges { display: flex; gap: 10px; }
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  .dot.offline { background: var(--red); }
+  .dot.checking { background: #ffeb3b; animation: blink 1s infinite; }
+
+  @keyframes blink {
+    0%,100% { opacity:1; }
+    50% { opacity:0.2; }
+  }
+
+  /* ── Layout ── */
+  .container { max-width: 1300px; margin: 0 auto; padding: 30px 24px; }
+
+  /* ── Order Form ── */
+  .order-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+
+  .panel-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 20px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 120px auto;
+    gap: 16px;
+    align-items: end;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 7px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .form-group select,
+  .form-group input {
+    width: 100%;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s;
+  }
+
+  .form-group select:focus,
+  .form-group input:focus {
+    border-color: var(--orange);
+  }
+
+  .btn-place {
+    background: linear-gradient(135deg, var(--orange), var(--orange2));
+    color: white;
+    border: none;
+    padding: 11px 28px;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+
+  .btn-place:hover  { opacity: 0.9; transform: translateY(-1px); }
+  .btn-place:active { transform: translateY(0); }
+
+  /* ── Data Grid ── */
+  .grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    height: 380px;
+    overflow-y: auto;
+  }
+
+  .card::-webkit-scrollbar { width: 4px; }
+  .card::-webkit-scrollbar-track { background: transparent; }
+  .card::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── User Items ── */
+  .user-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--card2);
+    border-radius: 10px;
+    padding: 11px 13px;
+    margin-bottom: 8px;
+  }
+
+  .avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--orange), var(--orange2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .u-name  { font-size: 14px; font-weight: 500; }
+  .u-email { font-size: 11px; color: var(--muted); }
+  .u-role  {
+    margin-left: auto;
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: rgba(255,107,53,0.15);
+    color: var(--orange);
+    font-weight: 600;
+  }
+
+  /* ── Product Items ── */
+  .product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card2);
+    border-radius: 10px;
+    padding: 11px 13px;
+    margin-bottom: 8px;
+  }
+
+  .p-name  { font-size: 14px; font-weight: 500; }
+  .p-cat   { font-size: 11px; color: var(--muted); }
+  .p-stock { font-size: 11px; color: var(--green); }
+  .p-price { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--orange); }
+
+  /* ── Order Items ── */
+  .order-item {
+    background: var(--card2);
+    border-radius: 10px;
+    padding: 12px 13px;
+    margin-bottom: 8px;
+  }
+
+  .o-row { display: flex; justify-content: space-between; align-items: center; }
+  .o-id  { font-size: 11px; color: var(--muted); }
+  .o-price { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--orange); }
+
+  .status-badge {
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-top: 6px;
+    display: inline-block;
+  }
+
+  .s-delivered  { background: rgba(0,230,118,0.1); color: var(--green); }
+  .s-processing { background: rgba(255,235,59,0.1); color: #ffeb3b; }
+  .s-pending    { background: rgba(255,107,53,0.1); color: var(--orange); }
+  .s-cancelled  { background: rgba(255,23,68,0.1);  color: var(--red); }
+
+  /* ── Platform Status ── */
+  .status-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+  }
+
+  .services-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .svc-card {
+    background: var(--card2);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--border);
+    transition: border 0.3s;
+  }
+
+  .svc-card.online  { border-color: rgba(0,230,118,0.3); }
+  .svc-card.offline { border-color: rgba(255,23,68,0.3); }
+
+  .svc-icon   { font-size: 32px; margin-bottom: 10px; }
+  .svc-name   { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .svc-status { font-size: 12px; font-weight: 600; }
+  .svc-url    { font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+  .online-text  { color: var(--green); }
+  .offline-text { color: var(--red); }
+
+  /* ── Empty / Loading ── */
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 40px 20px;
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 14px 22px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    display: none;
+    z-index: 999;
+    animation: slideUp 0.3s ease;
+    max-width: 320px;
+  }
+
+  .toast.success { background: #0d2b1a; border: 1px solid var(--green); color: var(--green); }
+  .toast.error   { background: #2b0d0d; border: 1px solid var(--red);   color: var(--red); }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  /* ── Setup Banner ── */
+  .setup-banner {
+    background: #1a1200;
+    border: 1px solid #ff6b3560;
+    border-radius: 12px;
+    padding: 16px 22px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: #ffb74d;
+    display: none;
+  }
+
+  .setup-banner code {
+    background: #111;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--orange);
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    🍕 FoodExpress
+    <span>Powered by AI DevOps Platform</span>
+  </div>
+  <div class="badges">
+    <div class="badge"><div class="dot checking" id="dot-user"></div> Users</div>
+    <div class="badge"><div class="dot checking" id="dot-product"></div> Products</div>
+    <div class="badge"><div class="dot checking" id="dot-order"></div> Orders</div>
+    <div class="badge"><div class="dot checking" id="dot-healer"></div> AI Healer</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Setup Banner (shown when services offline) -->
+  <div class="setup-banner" id="setup-banner">
+    ⚠️ Services appear offline. Make sure port-forwards are running:<br><br>
+    <code>kubectl port-forward service/user-service 5000:5000 &</code><br>
+    <code>kubectl port-forward service/product-service 5001:5001 &</code><br>
+    <code>kubectl port-forward service/order-service 5002:5002 &</code><br><br>
+    Or run: <code>bash start.sh</code>
+  </div>
+
+  <!-- Place Order -->
+  <div class="order-panel">
+    <div class="panel-title">🛒 Place New Order</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Customer</label>
+        <select id="sel-user"><option value="">Loading...</option></select>
+      </div>
+      <div class="form-group">
+        <label>Menu Item</label>
+        <select id="sel-product"><option value="">Loading...</option></select>
+      </div>
+      <div class="form-group">
+        <label>Qty</label>
+        <input type="number" id="inp-qty" value="1" min="1" max="10"/>
+      </div>
+      <button class="btn-place" onclick="placeOrder()">Order Now 🚀</button>
+    </div>
+  </div>
+
+  <!-- Data Grid -->
+  <div class="grid3">
+    <div class="card">
+      <div class="card-title">👥 Customers</div>
+      <div id="list-users"><div class="empty">Loading...</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🍔 Menu</div>
+      <div id="list-products"><div class="empty">Loading...</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📦 Orders</div>
+      <div id="list-orders"><div class="empty">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- Platform Status -->
+  <div class="status-panel">
+    <div class="panel-title">🤖 Platform Status — Live</div>
+    <div class="services-row">
+      <div class="svc-card" id="card-user">
+        <div class="svc-icon">👥</div>
+        <div class="svc-name">User Service</div>
+        <div class="svc-status checking-text" id="stat-user">Checking...</div>
+        <div class="svc-url">localhost:5000</div>
+      </div>
+      <div class="svc-card" id="card-product">
+        <div class="svc-icon">🍔</div>
+        <div class="svc-name">Product Service</div>
+        <div class="svc-status" id="stat-product">Checking...</div>
+        <div class="svc-url">localhost:5001</div>
+      </div>
+      <div class="svc-card" id="card-order">
+        <div class="svc-icon">📦</div>
+        <div class="svc-name">Order Service</div>
+        <div class="svc-status" id="stat-order">Checking...</div>
+        <div class="svc-url">localhost:5002</div>
+      </div>
+      <div class="svc-card" id="card-healer">
+        <div class="svc-icon">🤖</div>
+        <div class="svc-name">AI Healer</div>
+        <div class="svc-status" id="stat-healer">Checking...</div>
+        <div class="svc-url">localhost:5010</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────
+const API = {
+  users:    'http://localhost:5000',
+  products: 'http://localhost:5001',
+  orders:   'http://localhost:5002',
+  healer:   'http://localhost:5010'
+};
+
+// ── Toast ────────────────────────────────────────────────────
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type}`;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 3500);
+}
+
+// ── Set Service Status ───────────────────────────────────────
+function setStatus(name, online) {
+  const dot  = document.getElementById(`dot-${name}`);
+  const stat = document.getElementById(`stat-${name}`);
+  const card = document.getElementById(`card-${name}`);
+
+  if (online) {
+    dot.className  = 'dot';
+    stat.textContent = '● Online';
+    stat.className = 'svc-status online-text';
+    card.className = 'svc-card online';
+  } else {
+    dot.className  = 'dot offline';
+    stat.textContent = '● Offline';
+    stat.className = 'svc-status offline-text';
+    card.className = 'svc-card offline';
+  }
+}
+
+// ── Fetch with timeout ───────────────────────────────────────
+async function fetchWithTimeout(url, options = {}, timeout = 4000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(id);
+    return res;
+  } catch(e) {
+    clearTimeout(id);
+    throw e;
+  }
+}
+
+// ── Load Users ───────────────────────────────────────────────
+async function loadUsers() {
+  try {
+    const res  = await fetchWithTimeout(`${API.users}/users`);
+    const data = await res.json();
+    setStatus('user', true);
+
+    const list = document.getElementById('list-users');
+    const sel  = document.getElementById('sel-user');
+
+    list.innerHTML = '';
+    sel.innerHTML  = '<option value="">Select customer...</option>';
+
+    data.users.forEach(u => {
+      list.innerHTML += `
+        <div class="user-item">
+          <div class="avatar">${u.name[0]}</div>
+          <div>
+            <div class="u-name">${u.name}</div>
+            <div class="u-email">${u.email}</div>
+          </div>
+          <span class="u-role">${u.role}</span>
+        </div>`;
+      sel.innerHTML += `<option value="${u.id}">${u.name}</option>`;
+    });
+
+  } catch(e) {
+    setStatus('user', false);
+    document.getElementById('list-users').innerHTML =
+      '<div class="empty">⚠️ User service offline<br><small>Run port-forward first</small></div>';
+    document.getElementById('sel-user').innerHTML =
+      '<option value="">Service offline</option>';
+  }
+}
+
+// ── Load Products ────────────────────────────────────────────
+async function loadProducts() {
+  try {
+    const res  = await fetchWithTimeout(`${API.products}/products`);
+    const data = await res.json();
+    setStatus('product', true);
+
+    const list = document.getElementById('list-products');
+    const sel  = document.getElementById('sel-product');
+
+    list.innerHTML = '';
+    sel.innerHTML  = '<option value="">Select item...</option>';
+
+    data.products.forEach(p => {
+      list.innerHTML += `
+        <div class="product-item">
+          <div>
+            <div class="p-name">${p.name}</div>
+            <div class="p-cat">${p.category}</div>
+            <div class="p-stock">Stock: ${p.stock}</div>
+          </div>
+          <div class="p-price">₹${p.price}</div>
+        </div>`;
+      sel.innerHTML += `<option value="${p.id}">${p.name} — ₹${p.price}</option>`;
+    });
+
+  } catch(e) {
+    setStatus('product', false);
+    document.getElementById('list-products').innerHTML =
+      '<div class="empty">⚠️ Product service offline</div>';
+    document.getElementById('sel-product').innerHTML =
+      '<option value="">Service offline</option>';
+  }
+}
+
+// ── Load Orders ──────────────────────────────────────────────
+async function loadOrders() {
+  try {
+    const res  = await fetchWithTimeout(`${API.orders}/orders`);
+    const data = await res.json();
+    setStatus('order', true);
+
+    const list = document.getElementById('list-orders');
+    list.innerHTML = '';
+
+    if (data.orders.length === 0) {
+      list.innerHTML = '<div class="empty">No orders yet</div>';
+      return;
+    }
+
+    data.orders.forEach(o => {
+      list.innerHTML += `
+        <div class="order-item">
+          <div class="o-row">
+            <span class="o-id">#${o.id}</span>
+            <span class="o-price">₹${o.total_price}</span>
+          </div>
+          <span class="status-badge s-${o.status}">${o.status}</span>
+        </div>`;
+    });
+
+  } catch(e) {
+    setStatus('order', false);
+    document.getElementById('list-orders').innerHTML =
+      '<div class="empty">⚠️ Order service offline</div>';
+  }
+}
+
+// ── Check AI Healer ──────────────────────────────────────────
+async function checkHealer() {
+  try {
+    await fetchWithTimeout(`${API.healer}/health`);
+    setStatus('healer', true);
+  } catch(e) {
+    setStatus('healer', false);
+  }
+}
+
+// ── Place Order ──────────────────────────────────────────────
+async function placeOrder() {
+  const userId    = document.getElementById('sel-user').value;
+  const productId = document.getElementById('sel-product').value;
+  const quantity  = parseInt(document.getElementById('inp-qty').value);
+
+  if (!userId || !productId) {
+    toast('⚠️ Please select a customer and menu item!', 'error');
+    return;
+  }
+
+  try {
+    const res = await fetchWithTimeout(`${API.orders}/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id:    userId,
+        product_id: productId,
+        quantity:   quantity
+      })
+    });
+
+    if (res.ok) {
+      toast('✅ Order placed successfully!', 'success');
+      loadOrders();
+    } else {
+      const err = await res.json();
+      toast(`❌ ${err.error || 'Order failed'}`, 'error');
+    }
+  } catch(e) {
+    toast('❌ Cannot connect to order service. Check port-forwards!', 'error');
+  }
+}
+
+// ── Check if all offline → show banner ──────────────────────
+async function checkBanner() {
+  try {
+    await fetchWithTimeout(`${API.users}/health`, {}, 2000);
+    document.getElementById('setup-banner').style.display = 'none';
+  } catch(e) {
+    document.getElementById('setup-banner').style.display = 'block';
+  }
+}
+
+// ── Init ─────────────────────────────────────────────────────
+async function init() {
+  await Promise.all([
+    loadUsers(),
+    loadProducts(),
+    loadOrders(),
+    checkHealer(),
+    checkBanner()
+  ]);
+}
+
+// Load on start then refresh every 30 seconds
+init();
+setInterval(init, 30000);
+</script>
+</body>
+</html>
